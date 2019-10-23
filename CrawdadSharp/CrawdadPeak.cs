@@ -17,6 +17,7 @@ namespace CrawdadSharp
             Area = Math.Max(0.0f, crawPeak.peak_area);
             BackgroundArea = Math.Max(0.0f, crawPeak.bg_area);
             Fwhm = crawPeak.fwhm;
+            Fvalue = crawPeak.fvalue;
             FwhmDegenerate = !crawPeak.fwhm_calculated_ok;
             Fwfpct = crawPeak.fwfpct;
         }
@@ -31,6 +32,7 @@ namespace CrawdadSharp
         public float Height { get; }
         public float Fwhm { get; }
         public float Fwfpct { get; }
+        public float Fvalue { get; }
         public bool FwhmDegenerate { get; }
 
         public bool IsIdentified(IEnumerable<int> idIndices)

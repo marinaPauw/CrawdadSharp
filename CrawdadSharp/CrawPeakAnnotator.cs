@@ -410,6 +410,7 @@ namespace CrawdadSharp
                 rh_hm = rh_pt + frac_delta;
             }
             peak.fwfpct = rh_hm - lh_hm;
+            peak.fvalue = peak.peak_rt_idx - lh_hm;
         }
         public void refind_peak_peak(SlimCrawPeak peak)
         {

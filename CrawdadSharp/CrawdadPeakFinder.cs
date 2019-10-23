@@ -24,6 +24,7 @@ namespace CrawdadSharp
                 _pPeakFinder.method.min_len = (int)(value / 4.0 + 0.5);
             }
         }
+        public float FullWidthFivePercentMax { get; set; }
 
         public float StdDev
         {
@@ -47,6 +48,7 @@ namespace CrawdadSharp
             // Marshall intensities to vector for Crawdad
             int len = intensities.Count;
             float[] intensitiesCrawdad = new float[len];
+            float[] starttimes = new float[len];
             double baselineIntensity = double.MaxValue;
             double maxIntensity = 0;
             int maxIntensityIndex = -1;
@@ -54,7 +56,7 @@ namespace CrawdadSharp
             {
                 float intensity = (float)intensities[i];
                 intensitiesCrawdad[i] = intensity;
-
+                starttimes[i] = (float)times[i];
                 // Keep track of where the maximum intensity is
                 if (intensity > maxIntensity)
                 {
@@ -67,7 +69,7 @@ namespace CrawdadSharp
             if (baselineIntensity == double.MaxValue)
                 baselineIntensity = 0;
 
-            SetChromatogram(intensitiesCrawdad, maxIntensityIndex, baselineIntensity);
+            SetChromatogram(intensitiesCrawdad, maxIntensityIndex, baselineIntensity,starttimes);
         }
 
         public void SetChromatogram(IList<float> times, IList<float> intensities)
@@ -77,6 +79,7 @@ namespace CrawdadSharp
             // Marshall intensities to vector for Crawdad
             int len = intensities.Count;
             float[] intensitiesCrawdad = new float[len];
+            float[] starttimes = new float[len];
             double baselineIntensity = double.MaxValue;
             double maxIntensity = 0;
             int maxIntensityIndex = -1;
@@ -84,7 +87,7 @@ namespace CrawdadSharp
             {
                 float intensity = intensities[i];
                 intensitiesCrawdad[i] = intensity;
-
+                starttimes[i] = times[i];
                 // Keep track of where the maximum intensity is
                 if (intensity > maxIntensity)
                 {
@@ -97,13 +100,13 @@ namespace CrawdadSharp
             if (baselineIntensity == double.MaxValue)
                 baselineIntensity = 0;
 
-            SetChromatogram(intensitiesCrawdad, maxIntensityIndex, baselineIntensity);
+            SetChromatogram(intensitiesCrawdad, maxIntensityIndex, baselineIntensity, starttimes);
         }
 
-        void SetChromatogram(float[] intensities, int maxIntensityIndex, double baselineIntensity)
+        void SetChromatogram(float[] intensities, int maxIntensityIndex, double baselineIntensity, float[] starttimes)
         {
             // Find the peak width of the maximum intensity point at half its height.
-            int fwhm = 6;
+            float fwhm = 6;
             if (maxIntensityIndex != -1)
             {
                 double halfHeight = (intensities[maxIntensityIndex] - baselineIntensity) / 2 + baselineIntensity;
@@ -130,7 +133,7 @@ namespace CrawdadSharp
             }
             FullWidthHalfMax = fwhm;
 
-            int fwfpcnt = 0;
+            float fwfpcnt = 0;
             if (maxIntensityIndex != -1)
             {
                 double fpcntHeight = (intensities[maxIntensityIndex] - baselineIntensity) / 20 + baselineIntensity;
@@ -153,7 +156,7 @@ namespace CrawdadSharp
                         break;
                     }
                 }
-                fwfpcnt = Math.Max(fwfpcnt, iTail - iBeginning);
+                fwfpcnt = Math.Max(fwfpcnt, 60*(starttimes[iTail] - starttimes[iBeginning]));
             }
 
                 _widthDataWings = (int)(FullWidthHalfMax * 2);
