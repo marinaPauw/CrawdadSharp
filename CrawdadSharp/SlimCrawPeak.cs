@@ -6,6 +6,7 @@
         public int mz_idx;
         public int len;
         public float fwhm;
+        public float fwbase;
         public bool fwhm_calculated_ok;
         public float fwfpct;
         public float fvalue;

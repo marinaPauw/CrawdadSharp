@@ -20,6 +20,7 @@ namespace CrawdadSharp
             Fvalue = crawPeak.fvalue;
             FwhmDegenerate = !crawPeak.fwhm_calculated_ok;
             Fwfpct = crawPeak.fwfpct;
+            FwBaseline = crawPeak.fwbase;
         }
 
         public int TimeIndex { get; }
@@ -33,6 +34,7 @@ namespace CrawdadSharp
         public float Fwhm { get; }
         public float Fwfpct { get; }
         public float Fvalue { get; }
+        public float FwBaseline { get; }
         public bool FwhmDegenerate { get; }
 
         public bool IsIdentified(IEnumerable<int> idIndices)
