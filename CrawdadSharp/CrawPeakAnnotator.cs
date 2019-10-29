@@ -29,6 +29,7 @@ namespace CrawdadSharp
             set_peak_bg_subtracted_area(peak);
             calc_fwhm(peak);
             calc_fwfpcnt(peak);
+            calc_fwbase(peak);
         }
 
         int calc_len(int start_rt_idx, int stop_rt_idx) => stop_rt_idx - start_rt_idx + 1;
@@ -411,6 +412,53 @@ namespace CrawdadSharp
             }
             peak.fwfpct = rh_hm - lh_hm;
             peak.fvalue = peak.peak_rt_idx - lh_hm;
+        }
+
+        public void calc_fwbase(SlimCrawPeak peak)
+        {
+            float[] chrom = active_chrom;
+            float lh_height = chrom[peak.start_rt_idx];
+            float rh_height = chrom[peak.stop_rt_idx];
+            float height = peak.raw_height - Math.Min(lh_height, rh_height);
+            float fw = (float)(peak.raw_height - (height));
+            int lh_pt = -1, rh_pt = -1;
+            float lh_hm, rh_hm;
+            for (int i = peak.start_rt_idx; i < peak.peak_rt_idx; i++)
+            {
+                if (chrom[i] <= fw && chrom[i + 1] >= fw)
+                {
+                    lh_pt = i;
+                    break;
+                }
+            }
+            for (int i = peak.peak_rt_idx; i < Math.Min(peak.stop_rt_idx, chrom.Length - 2); i++)
+            {
+                if (chrom[i] >= fw && chrom[i + 1] <= fw)
+                {
+                    rh_pt = i;
+                    break;
+                }
+            }
+
+            if (lh_pt == -1)
+            {
+                lh_hm = peak.start_rt_idx;
+            }
+            else
+            {
+                float frac_delta = (fw - chrom[lh_pt]) / (chrom[lh_pt + 1] - chrom[lh_pt]);
+                lh_hm = lh_pt + frac_delta;
+            }
+            if (rh_pt == -1)
+            {
+                rh_hm = peak.stop_rt_idx;
+            }
+            else
+            {
+                float frac_delta = (chrom[rh_pt] - fw) / (chrom[rh_pt] - chrom[rh_pt + 1]);
+                rh_hm = rh_pt + frac_delta;
+            }
+            peak.fwbase = rh_hm - lh_hm;
         }
         public void refind_peak_peak(SlimCrawPeak peak)
         {

@@ -32,6 +32,7 @@ namespace CrawdadSharp
             annotator.set_peak_bg_subtracted_area(peak);
             annotator.calc_fwhm(peak);
             annotator.calc_fwfpcnt(peak);
+            annotator.calc_fwbase(peak);
             sps.Add(peak);
         }
 
